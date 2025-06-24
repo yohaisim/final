@@ -25,14 +25,18 @@ final/
 ├── requirements.txt           # Python dependencies
 ├── .gitignore                 # Exclusion rules
 ├── templates/                 # HTML (Jinja2) templates
-│   ├── welcome.html
-│   ├── select_method.html
-│   ├── by_shape.html
-│   └── by_area.html
+│   ├── welcome.html           # Landing screen with video background
+│   ├── select_method.html     # Choose shape/area classification
+│   ├── by_shape.html          # Upload puzzle pieces for shape-based grouping
+│   └── by_area.html           # Upload full puzzle + pieces for region matching
 ├── static/                    # CSS, logo, video background
 │   ├── style.css
 │   ├── logowhite.png
-│   └── PuzzleVideo.mp4
+│   ├── PuzzleVideo.mp4
+│   └── screenshots/           # Example screenshots for documentation
+│       ├── by_shape.jpg
+│       ├── by_area.jpg
+│       └── edge_classification_result.jpg
 ├── uploads/                   # Temp upload dir (git-ignored)
 ├── results/                   # Result images and metadata (git-ignored)
 ├── detect_corner_simple.py    # Finds 4 corners per piece
@@ -73,41 +77,57 @@ Server runs at [http://localhost:5000](http://localhost:5000). Navigate to `/sel
 
 ## Usage Overview
 
-### 1. By Shape Classification
+### 1. `/by_shape` – Shape Classification
 
 * Upload an image of puzzle pieces on a plain background
-* Each piece is analyzed using corner detection and edge analysis
-* For each edge, a shape is inferred:
+* Each piece is analyzed using:
 
-  * **Flat** (straight edge)
-  * **Tab** (outward bump)
-  * **Blank** (inward notch)
-* The algorithm evaluates the deviation of edge contours from a straight line and their direction relative to the piece centroid
-* Pieces are grouped by their 4-edge signature (rotation-invariant)
-* The result includes:
+  * Corner detection
+  * 4 edge contour segments
+  * Edge deviation and orientation logic
+* Result:
 
-  * `shape_result.jpg` – grouped pieces colored by shape
-  * `edge_classification_result.jpg` – with edge labels
-  * `corners_result.jpg` – 4 detected corners
+  * Classification of each edge as `Tab`, `Blank`, or `Flat`
+  * Grouping by shape signature (rotation-invariant)
+  * Saves: `shape_result.jpg`, `edge_classification_result.jpg`, `corners_result.jpg`
 
-### 2. By Area Classification
+### 2. `/by_area` – Region Matching by Panoptic Segmentation
 
-* Upload a **complete puzzle image** once
+* Upload full puzzle image first → processed once with Mask2Former (COCO model)
+* Then upload puzzle pieces
+* Each piece is matched to a puzzle region using:
 
-  * We run Mask2Former panoptic segmentation (pretrained on COCO)
-  * Each region is labeled and assigned a color
-* Upload loose puzzle pieces image
+  * Color similarity (average RGB)
+  * Texture similarity (SSIM)
+  * GPT-4o (image-to-image visual reasoning)
+* Result image shows each piece painted with the exact region color from the full puzzle.
+* Saves: `panoptic_output.png`, `pieces_attributed.png`, `matches_<session>.json`
 
-  * Each piece is matched to a segment using:
+---
 
-    * Color similarity (mean RGB comparison)
-    * Texture similarity (SSIM on grayscale crops)
-    * GPT-4o visual reasoning (comparing piece vs. segmented puzzle)
-  * Final piece color is copied exactly from the matched region
-  * Results:
+## Screenshots
 
-    * `panoptic_output.png`, `pieces_attributed.png`
-    * `matches_<session>.json` with confidence breakdown
+### Shape Classification Interface
+
+This screen allows uploading puzzle pieces for shape-based analysis.
+
+![Shape Upload UI](static/screenshots/by_shape.jpg)
+
+---
+
+### Area Classification Interface
+
+This screen allows uploading the full puzzle image and loose pieces for regional matching.
+
+![Area Upload UI](static/screenshots/by_area.jpg)
+
+---
+
+### Edge Classification Internals
+
+This debug view shows how each puzzle piece is analyzed: edges segmented, classified, and color-coded as `Tab`, `Blank`, or `Flat`.
+
+![Edge Classification Result](static/screenshots/edge_classification_result.jpg)
 
 ---
 
