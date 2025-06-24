@@ -1,4 +1,6 @@
-# Puzzle Piece Analyzer – Flask Web App
+<p align="center">
+  <img src="static/screenshots/logo.png" alt="Puzzle Logo" width="200"/>
+</p>
 
 A web application that lets you classify jigsaw puzzle pieces either by their geometric shape (tabs/blanks/flats) or by matching each piece to a colored region in the reference image using state-of-the-art panoptic segmentation (Mask2Former) and OpenAI vision reasoning.
 
