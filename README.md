@@ -164,4 +164,4 @@ Contributions are welcome.
 
 ## License
 
-MIT © 2025 Yohai Simhony & collaborators
+MIT © 2025 Yohai Simhony & Raphael Marrache
