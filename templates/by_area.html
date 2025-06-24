@@ -155,25 +155,26 @@
     <!-- Results Section -->
     {% if puzzle_uploaded and panoptic_ready %}
     <div class="grid-container">
-        <div class="image-box">
-            <h3>Original Puzzle</h3>
-            <img src="{{ url_for('static', filename='results/puzzle_original.png') }}" alt="Puzzle Original">
-        </div>
-        <div class="image-box">
-            <h3>Panoptic Segmentation</h3>
-            <img src="{{ url_for('static', filename='results/panoptic_output.png') }}" alt="Panoptic Segmentation">
-        </div>
-        {% if pieces_uploaded and area_result_ready %}
-        <div class="image-box">
-            <h3>Original Pieces</h3>
-            <img src="{{ url_for('static', filename='results/pieces_original.png') }}" alt="Pieces Original">
-        </div>
-        <div class="image-box">
-            <h3>Area Attribution Result</h3>
-            <img src="{{ url_for('static', filename='results/pieces_attributed.png') }}" alt="Attributed Pieces">
-        </div>
-        {% endif %}
+    <div class="image-box">
+        <h3>Original Puzzle</h3>
+        <img src="{{ url_for('show_result', n='puzzle_original.png') }}" alt="Puzzle Original">
     </div>
+    <div class="image-box">
+        <h3>Panoptic Segmentation</h3>
+        <img src="{{ url_for('show_result', n='panoptic_output.png') }}" alt="Panoptic Segmentation">
+    </div>
+    {% if pieces_uploaded and area_result_ready %}
+    <div class="image-box">
+        <h3>Original Pieces</h3>
+        <img src="{{ url_for('show_result', n='pieces_original.png') }}" alt="Pieces Original">
+    </div>
+    <div class="image-box">
+        <h3>Area Attribution Result</h3>
+        <img src="{{ url_for('show_result', n='pieces_attributed.png') }}" alt="Attributed Pieces">
+    </div>
+    {% endif %}
+</div>
+
     {% endif %}
 
     <nav>
