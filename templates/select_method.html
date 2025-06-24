@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select Method</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Create a container with form styling */
+        .buttons-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px auto;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        /* Remove form styling */
+        .clean-form {
+            background: none !important;
+            backdrop-filter: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            margin: 15px 0 !important;
+            width: auto !important;
+            max-width: none !important;
+        }
+        
+        /* Make buttons smaller and centered */
+        .clean-form button {
+            width: 100% !important;
+            margin: 0 auto !important;
+            display: block !important;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logowhite.png') }}" alt="Logo" class="logo">
+    </header>
+
+    <h1>Choose classification method</h1>
+
+    <div class="buttons-container">
+        <form action="/by_shape" method="get" class="clean-form">
+            <button type="submit">Classify by Shape</button>
+        </form>
+
+        <form action="/by_area" method="get" class="clean-form">
+            <button type="submit">Classify by Puzzle Area</button>
+        </form>
+    </div>
+</body>
+</html>

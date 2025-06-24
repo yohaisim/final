@@ -1,0 +1,203 @@
+/* === Base === */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: url("/static/background.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding-bottom: 60px; /* Space for bottom navigation */
+    min-height: 100vh;
+}
+
+/* === Headings === */
+h1, h2 {
+    color: white;
+    margin-top: 10px;
+}
+
+/* === Logo Header === */
+header {
+    text-align: center;
+    margin: 90px 0 50px;
+}
+
+header img.logo {
+    width: 200px;
+    filter: drop-shadow(0 0 6px white);
+    border: none !important;
+}
+
+/* === Forms === */
+form {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 25px;
+    margin: 30px auto;
+    width: 90%;
+    max-width: 400px;
+}
+
+.file-upload-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.custom-file-upload {
+    padding: 14px 32px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.custom-file-upload:hover {
+    background-color: rgba(255, 255, 255, 0.35);
+}
+
+input[type="file"] {
+    display: none;
+}
+
+#file-selected {
+    color: #ddd;
+    font-size: 14px;
+    font-style: italic;
+}
+
+/* === Submit Button === */
+button {
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: rgba(255, 255, 255, 0.35);
+}
+
+/* === Images === */
+img {
+    max-width: 90%;
+    height: auto;
+    margin: 20px auto;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 8px;
+    display: block;
+}
+
+/* === Paragraphs === */
+p {
+    font-size: 16px;
+    color: #ddd;
+}
+
+/* === Bottom Navigation Bar === */
+nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: color 0.3s;
+    padding: 8px 12px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7); /* Shadow for navigation text */
+}
+
+nav a:hover {
+    color: #ffffcc;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.8); /* Stronger shadow on hover */
+}
+
+nav a span {
+    font-size: 18px;
+}
+
+/* === House Icon Styling === */
+.house {
+    width: 20px;          
+    height: 20px;         
+    border: none;         
+    outline: none;        
+    vertical-align: middle; 
+    transition: opacity 0.3s ease;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.7)); /* Shadow for house icon */
+}
+
+.house:hover {
+    opacity: 0.7;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8)); /* Stronger shadow on hover */
+}
+
+/* Special styling for house icon link to reduce space */
+nav a[href="/select"] {
+    padding: 4px 8px !important;
+    margin: 0 5px !important;
+    line-height: 20px !important;
+}
+
+nav a img.house {
+    border: none !important;
+    box-shadow: none;
+    margin: 0; /* Remove default image margin */
+}
+
+
+/* === Responsive (Mobile) === */
+@media (max-width: 600px) {
+    button {
+        font-size: 18px;
+    }
+    nav a {
+        font-size: 12px;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); /* Adjusted shadow for mobile */
+    }
+    h1 {
+        font-size: 20px;
+    }
+    
+    /* Smaller house icon on mobile */
+    .house {
+        width: 18px;
+        height: 18px;
+        filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8)); /* Adjusted shadow for mobile */
+    }
+    
+    nav a[href="/select"] {
+        padding: 3px 6px !important;
+    }
+}

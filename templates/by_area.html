@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Classify by Area</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        #progress-container {
+            display: none;
+            margin-top: 20px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 25px;
+            background-color: #3498db;
+            border-radius: 5px;
+        }
+        #progress-wrapper {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 20px;
+            max-width: 1000px;
+            margin: 40px auto;
+        }
+
+        .grid-container img {
+            max-width: 100%;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .upload-section {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .file-upload-wrapper {
+            margin: 10px;
+        }
+
+        .image-box {
+            text-align: center;
+        }
+
+        .upload-forms {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .upload-forms form {
+            background: rgba(255, 255, 255, 0.15) !important;
+            backdrop-filter: blur(12px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 12px !important;
+            padding: 20px !important;
+            margin: 0 !important;
+            width: auto !important;
+            max-width: none !important;
+        }
+
+        .upload-forms h3 {
+            margin: 0 0 15px 0;
+            color: white;
+            font-size: 18px;
+        }
+
+        .success-message {
+            color: #4CAF50;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        nav {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        nav a {
+            margin: 0 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logowhite.png') }}" alt="Logo" class="logo">
+    </header>
+
+    <h1>Upload puzzle images (by area)</h1>
+
+    <p>Upload the complete puzzle image and puzzle pieces to see how they match different areas.</p>
+
+    {% if error_message %}
+        <div class="error-message">{{ error_message }}</div>
+    {% endif %}
+
+    <div class="upload-forms">
+        <!-- Puzzle Image Upload Form -->
+        <form method="POST" enctype="multipart/form-data" id="puzzle-form">
+            <h3>{% if puzzle_uploaded %}Puzzle Image ✓{% else %}1. Upload Complete Puzzle Image{% endif %}</h3>
+            <div class="file-upload-wrapper">
+                <label for="puzzle-upload" class="custom-file-upload">
+                    {% if puzzle_uploaded %}Replace Puzzle Image{% else %}Choose Puzzle Image{% endif %}
+                </label>
+                <input id="puzzle-upload" type="file" name="puzzle_image" accept="image/*">
+                <span id="puzzle-selected">No file selected</span>
+            </div>
+            <button type="submit">{% if puzzle_uploaded %}Update Puzzle{% else %}Process Puzzle{% endif %}</button>
+        </form>
+
+        <!-- Pieces Image Upload Form - Only show after puzzle is uploaded -->
+        {% if puzzle_uploaded and panoptic_ready %}
+        <form method="POST" enctype="multipart/form-data" id="pieces-form">
+            <h3>{% if pieces_uploaded %}Puzzle Pieces ✓{% else %}2. Upload Puzzle Pieces{% endif %}</h3>
+            <div class="file-upload-wrapper">
+                <label for="pieces-upload" class="custom-file-upload">
+                    {% if pieces_uploaded %}Replace Pieces Image{% else %}Choose Pieces Image{% endif %}
+                </label>
+                <input id="pieces-upload" type="file" name="pieces_image" accept="image/*">
+                <span id="pieces-selected">No file selected</span>
+            </div>
+            <button type="submit">{% if pieces_uploaded %}Update Pieces{% else %}Process Pieces{% endif %}</button>
+        </form>
+        {% elif not puzzle_uploaded %}
+        <div style="text-align: center; color: #ddd; font-style: italic; margin-top: 20px;">
+            <p>Please upload and process the complete puzzle image first to unlock piece analysis.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div id="progress-container">
+        <div id="progress-wrapper">
+            <div id="progress-bar"></div>
+        </div>
+        <p>Processing...</p>
+    </div>
+
+    <!-- Results Section -->
+    {% if puzzle_uploaded and panoptic_ready %}
+    <div class="grid-container">
+        <div class="image-box">
+            <h3>Original Puzzle</h3>
+            <img src="{{ url_for('static', filename='results/puzzle_original.png') }}" alt="Puzzle Original">
+        </div>
+        <div class="image-box">
+            <h3>Panoptic Segmentation</h3>
+            <img src="{{ url_for('static', filename='results/panoptic_output.png') }}" alt="Panoptic Segmentation">
+        </div>
+        {% if pieces_uploaded and area_result_ready %}
+        <div class="image-box">
+            <h3>Original Pieces</h3>
+            <img src="{{ url_for('static', filename='results/pieces_original.png') }}" alt="Pieces Original">
+        </div>
+        <div class="image-box">
+            <h3>Area Attribution Result</h3>
+            <img src="{{ url_for('static', filename='results/pieces_attributed.png') }}" alt="Attributed Pieces">
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <nav>
+        <a href="/by_shape">By Shape</a>
+        <a href="/select"><img src="{{ url_for('static', filename='house.png') }}" alt="house" class="house"></a>
+        <a href="/by_area">By Area</a>
+    </nav>
+
+    <script>
+        const puzzleForm = document.getElementById("puzzle-form");
+        const piecesForm = document.getElementById("pieces-form");
+        const progressContainer = document.getElementById("progress-container");
+        const progressBar = document.getElementById("progress-bar");
+        const puzzleInput = document.getElementById("puzzle-upload");
+        const piecesInput = document.getElementById("pieces-upload");
+        const puzzleSelected = document.getElementById("puzzle-selected");
+        const piecesSelected = document.getElementById("pieces-selected");
+
+        function showProgress() {
+            progressContainer.style.display = "block";
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 2;
+                progressBar.style.width = progress + "%";
+                if (progress >= 98) clearInterval(interval);
+            }, 100);
+        }
+
+        puzzleForm.addEventListener("submit", function () {
+            showProgress();
+        });
+
+        // Only add event listeners if pieces form exists
+        if (piecesForm) {
+            piecesForm.addEventListener("submit", function () {
+                showProgress();
+            });
+        }
+
+        puzzleInput.addEventListener("change", function () {
+            puzzleSelected.textContent = puzzleInput.files.length > 0 ? puzzleInput.files[0].name + "✓": "No file selected";
+        });
+
+        // Only add event listener if pieces input exists
+        if (piecesInput) {
+            piecesInput.addEventListener("change", function () {
+                piecesSelected.textContent = piecesInput.files.length > 0 ? piecesInput.files[0].name + "✓" : "No file selected";
+            });
+        }
+    </script>
+</body>
+</html>

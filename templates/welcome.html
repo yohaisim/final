@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PuzzHelper - Welcome</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        video.bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: -1;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+
+        .logo {
+            width: 500px;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 0 5px white);
+        }
+
+        .start-button {
+            padding: 14px 36px;
+            font-size: 20px;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .start-button:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+            border-color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <video class="bg-video" autoplay muted loop>
+        <source src="{{ url_for('static', filename='PuzzleVideo.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="overlay">
+        <img src="{{ url_for('static', filename='logowhite.png') }}" alt="Logo" class="logo">
+        <a href="{{ url_for('select_method') }}" class="start-button">Get Started</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Classify by Shape</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        #progress-container {
+            display: none;
+            margin-top: 20px;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        #progress-bar {
+            width: 0%;
+            height: 25px;
+            background-color: #3498db;
+            border-radius: 5px;
+        }
+        #progress-wrapper {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .results-section {
+            margin-top: 40px;
+        }
+
+        .results-section h2 {
+            margin-bottom: 20px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .image-box {
+            text-align: center;
+        }
+
+        .image-box h3 {
+            margin-bottom: 15px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .image-box img {
+            max-width: 100%;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 8px;
+        }
+
+        /* For mobile - stack vertically */
+        @media (max-width: 768px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+                grid-gap: 30px;
+            }
+        }
+
+        nav {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        nav a {
+            margin: 0 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='logowhite.png') }}" alt="Logo" class="logo">
+    </header>
+
+    <h1>Upload puzzle pieces (by shape)</h1>
+
+    <p>Upload an image of puzzle pieces to classify them by their shape characteristics.</p>
+
+    <form method="POST" enctype="multipart/form-data" id="upload-form">
+        <div class="file-upload-wrapper">
+            <label for="file-upload" class="custom-file-upload">
+                {% if uploaded_pieces %}Replace Image{% else %}Choose Image{% endif %}
+            </label>
+            <input id="file-upload" type="file" name="pieces_image" accept="image/*" required>
+            <span id="file-selected">No file selected</span>
+        </div>
+        <br>
+        <button type="submit">{% if uploaded_pieces %}Update Analysis{% else %}Analyze Shapes{% endif %}</button>
+    </form>
+    
+    <div id="progress-container">
+        <div id="progress-wrapper">
+            <div id="progress-bar"></div>
+        </div>
+        <p>Processing...</p>
+    </div>
+
+    {% if uploaded_pieces or result_image %}
+    <div class="results-section">
+        <h2>Results:</h2>
+        <div class="results-grid">
+            {% if uploaded_pieces %}
+            <div class="image-box">
+                <h3>Original Image</h3>
+                <img src="{{ url_for('show_result', n=uploaded_pieces) }}" alt="Uploaded Pieces">
+            </div>
+            {% endif %}
+            
+            {% if result_image %}
+            <div class="image-box">
+                <h3>Shape Classification Result</h3>
+                <img src="{{ url_for('show_result', n=result_image) }}" alt="Shape Classification Result">
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if not uploaded_pieces and not result_image %}
+    <div class="results-section">
+        <p>No images uploaded yet. Upload an image to see the shape classification results.</p>
+    </div>
+    {% endif %}
+
+    <nav>
+        <a href="/by_shape">By Shape</a>
+        <a href="/select"><img src="{{ url_for('static', filename='house.png') }}" alt="house" class="house"></a>
+        <a href="/by_area">By Area</a>
+    </nav>
+
+    <script>
+        const form = document.getElementById("upload-form");
+        const progressContainer = document.getElementById("progress-container");
+        const progressBar = document.getElementById("progress-bar");
+        const fileInput = document.getElementById("file-upload");
+        const fileSelected = document.getElementById("file-selected");
+
+        form.addEventListener("submit", function () {
+            progressContainer.style.display = "block";
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 2;
+                progressBar.style.width = progress + "%";
+                if (progress >= 98) clearInterval(interval);
+            }, 100);
+        });
+
+        fileInput.addEventListener("change", function () {
+            if (fileInput.files.length > 0) {
+                fileSelected.textContent =  fileInput.files[0].name + "✓";
+            } else {
+                fileSelected.textContent = "No file selected";
+            }
+        });
+    </script>
+</body>
+</html>

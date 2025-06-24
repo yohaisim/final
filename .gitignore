@@ -1,0 +1,9 @@
+__pycache__/
+uploads/
+*.pyc
+*.jpg
+*.png
+*.mp4
+static/results/
+.env
+config.py
