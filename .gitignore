@@ -2,7 +2,11 @@ __pycache__/
 uploads/
 results/
 *.pyc
+*.jpg
 *.png
 *.mp4
 .env
 config.py
+!static/screenshots/
+!static/screenshots/*.jpg
+!static/screenshots/*.png
