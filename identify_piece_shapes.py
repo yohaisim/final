@@ -4,8 +4,6 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 import math
 import random
-
-from find_contour import detect_puzzle_pieces  # Changed from detect_pieces
 from detect_corner_simple import find_square_corners
 
 
