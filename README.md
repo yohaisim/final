@@ -1,47 +1,55 @@
 # Puzzle Piece Analyzer – Flask Web App
 
-![Puzzle Demo](static/PuzzleVideo.mp4)
-
-A web application that lets you **classify jigsaw‑puzzle pieces** either by their **geometric shape** (tabs/blanks/flats) or by **matching each piece to a colored region in the reference image** using state‑of‑the‑art panoptic segmentation (Mask2Former) plus OpenAI vision reasoning.
+A web application that lets you classify jigsaw puzzle pieces either by their geometric shape (tabs/blanks/flats) or by matching each piece to a colored region in the reference image using state-of-the-art panoptic segmentation (Mask2Former) and OpenAI vision reasoning.
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-| Feature                    | Description                                                                                                                                                                          |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **By Shape**               | Detects each piece, finds its 4 corners, classifies every edge (Tab / Blank / Flat) and groups pieces with identical edge signatures.                                                |
-| **By Area**                | Upload the finished‑puzzle picture once → Mask2Former panoptic segmentation → precise colour+texture+OpenAI matching paints each loose piece with **exactly the RGB of its region**. |
-| **Screenshot Generator**   | Saves visualisations for contours, edge classes, corner detection, and area attribution into the `results/` folder.                                                                  |
-| **REST‑like Flask routes** | `/by_shape` and `/by_area` templates with drag‑and‑drop file upload, live status, and cached panoptic data.                                                                          |
-| **Modular pipeline**       | Separate modules: `panoptic_segmentation.py`, `identify_piece_shapes.py`, `puzzle_area_match.py`, `detect_corner_simple.py`, etc.                                                    |
+| Feature                    | Description                                                                                                                                                          |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **By Shape**               | Detects each piece, finds its 4 corners, classifies every edge (Tab / Blank / Flat), and groups pieces with identical edge signatures.                               |
+| **By Area**                | Upload the finished puzzle image once → panoptic segmentation → precise colour + texture + OpenAI matching paints each loose piece with the exact RGB of its region. |
+| **Screenshot Generator**   | Saves visualisations for contours, edge classes, corner detection, and area attribution into the `results/` folder.                                                  |
+| **REST-like Flask routes** | `/by_shape` and `/by_area` templates with drag-and-drop file upload, live status, and cached panoptic data.                                                          |
+| **Modular pipeline**       | Separate modules: `panoptic_segmentation.py`, `identify_piece_shapes.py`, `puzzle_area_match.py`, `detect_corner_simple.py`, `find_contour.py`, etc.                 |
 
 ---
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 final/
-├── app.py                # Flask entry‑point
-├── config.py             # OPENAI_API_KEY, other secrets (NOT committed)
-├── requirements.txt      # Python dependencies
-├── static/               # CSS, logo, video background
-├── templates/            # Jinja2 HTML templates
-├── uploads/              # Temp upload dir (git‑ignored)
-├── results/              # Generated results (git‑ignored)
-├── panoptic_segmentation.py
-├── puzzle_area_match.py
-├── identify_piece_shapes.py
-└── detect_corner_simple.py
+├── app.py                     # Flask entry-point
+├── config.py                  # OPENAI_API_KEY and config (not committed)
+├── requirements.txt           # Python dependencies
+├── .gitignore                 # Exclusion rules
+├── templates/                 # HTML (Jinja2) templates
+│   ├── welcome.html
+│   ├── select_method.html
+│   ├── by_shape.html
+│   └── by_area.html
+├── static/                    # CSS, logo, video background
+│   ├── style.css
+│   ├── logowhite.png
+│   └── PuzzleVideo.mp4
+├── uploads/                   # Temp upload dir (git-ignored)
+├── results/                   # Result images and metadata (git-ignored)
+├── detect_corner_simple.py    # Finds 4 corners per piece
+├── identify_piece_shapes.py   # Edge classification logic
+├── puzzle_area_match.py       # Matching logic (color + texture + OpenAI)
+├── panoptic_segmentation.py   # Uses Mask2Former to segment full puzzle
+├── find_contour.py            # Detects individual puzzle pieces using contour extraction
+└── .env (optional)            # For storing OPENAI_API_KEY securely
 ```
 
 ---
 
-## 🧰 Setup
+## Setup
 
 ```bash
 # 1. Clone
-$ git clone https://github.com/<your‑org>/puzzle-project.git
+$ git clone https://github.com/<your-org>/puzzle-project.git
 $ cd puzzle-project
 
 # 2. Create venv (optional but recommended)
@@ -53,59 +61,78 @@ $ pip install -r requirements.txt
 
 # 4. Environment variables
 $ export OPENAI_API_KEY=<your-key>
-# optional: other config in config.py
+# or create a .env file or edit config.py
 
 # 5. Launch
 $ python app.py
 ```
 
-The server runs at [http://localhost:5000](http://localhost:5000). Navigate to **/select** to choose Shape vs Area workflows.
+Server runs at [http://localhost:5000](http://localhost:5000). Navigate to `/select` to choose workflow.
 
 ---
 
-## 🔍 Usage Walk‑through
+## Usage Overview
 
-1. **By Shape**
+### 1. By Shape Classification
 
-   1. Click **By shape**
-   2. Upload an image of loose pieces on a contrasting background
-   3. The page displays:
+* Upload an image of puzzle pieces on a plain background
+* Each piece is analyzed using corner detection and edge analysis
+* For each edge, a shape is inferred:
 
-      * `shape_result.jpg` – pieces coloured by group
-      * `edge_classification_result.jpg` – edge labels
-      * `corners_result.jpg` – detected 4 corners per piece
-2. **By Area**
+  * **Flat** (straight edge)
+  * **Tab** (outward bump)
+  * **Blank** (inward notch)
+* The algorithm evaluates the deviation of edge contours from a straight line and their direction relative to the piece centroid
+* Pieces are grouped by their 4-edge signature (rotation-invariant)
+* The result includes:
 
-   1. Upload the *complete* puzzle picture once → panoptic mask is cached.
-   2. Upload an image of pieces → app paints each piece with region colour and saves `pieces_attributed.png`.
-   3. Matching stats & confidences are saved to `matches_<session>.json`.
+  * `shape_result.jpg` – grouped pieces colored by shape
+  * `edge_classification_result.jpg` – with edge labels
+  * `corners_result.jpg` – 4 detected corners
+
+### 2. By Area Classification
+
+* Upload a **complete puzzle image** once
+
+  * We run Mask2Former panoptic segmentation (pretrained on COCO)
+  * Each region is labeled and assigned a color
+* Upload loose puzzle pieces image
+
+  * Each piece is matched to a segment using:
+
+    * Color similarity (mean RGB comparison)
+    * Texture similarity (SSIM on grayscale crops)
+    * GPT-4o visual reasoning (comparing piece vs. segmented puzzle)
+  * Final piece color is copied exactly from the matched region
+  * Results:
+
+    * `panoptic_output.png`, `pieces_attributed.png`
+    * `matches_<session>.json` with confidence breakdown
 
 ---
 
-## 🏗️ Deployment (Render example)
+## Deployment (Render)
 
-1. Push the repo to GitHub (public or private).
-2. Create a free service on [render.com](https://render.com):
+1. Push the repository to GitHub
+2. Create a service at [render.com](https://render.com)
 
-   * Environment → **Docker** *(optional)* or **Python** build.
-   * Add env‑var `OPENAI_API_KEY`.
+   * Environment: Python
+   * Add environment variable `OPENAI_API_KEY`
    * Start command: `python app.py`
-3. Render will expose a public URL like `https://puzzle-project.onrender.com`.
-
-*Last tested on Python 3.11, Torch 2.3.0, CUDA 12.2.*
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-Pull requests are welcome! Please open an issue first to discuss what you want to change.
+Contributions are welcome.
 
-1. Fork → feature branch → PR
-2. Run `black .` & `flake8` before committing.
-3. Add screenshots to make reviewing easier.
+1. Fork the repo
+2. Make changes in a new branch
+3. Run `black .` & `flake8` before PR
+4. Submit a pull request with screenshots if applicable
 
 ---
 
-## 📄 License
+## License
 
-MIT © 2025 Yohai Simhony & Co‑Author
+MIT © 2025 Yohai Simhony & collaborators
