@@ -113,7 +113,9 @@ Server runs at [http://localhost:5000](http://localhost:5000). Navigate to `/sel
 
 This screen allows uploading puzzle pieces for shape-based analysis.
 
-![Shape Upload UI](static/screenshots/by_shape.jpg)
+<p align="center">
+  <img src="static/screenshots/by_shape.jpg" alt="Shape Upload UI" width="600"/>
+</p>
 
 ---
 
@@ -121,7 +123,9 @@ This screen allows uploading puzzle pieces for shape-based analysis.
 
 This screen allows uploading the full puzzle image and loose pieces for regional matching.
 
-![Area Upload UI](static/screenshots/by_area.jpg)
+<p align="center">
+  <img src="static/screenshots/by_area.jpg" alt="Shape Upload UI" width="600"/>
+</p>
 
 ---
 
@@ -129,7 +133,10 @@ This screen allows uploading the full puzzle image and loose pieces for regional
 
 This debug view shows how each puzzle piece is analyzed: edges segmented, classified, and color-coded as `Tab`, `Blank`, or `Flat`.
 
-![Edge Classification Result](static/screenshots/edge_classification_result.jpg)
+<p align="center">
+  <img src="static/screenshots/edge_classification_result.jpg" alt="Shape Upload UI" width="600"/>
+</p>
+
 
 ---
 
