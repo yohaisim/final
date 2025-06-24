@@ -2,7 +2,6 @@ __pycache__/
 uploads/
 results/
 *.pyc
-*.jpg
 *.png
 *.mp4
 .env
